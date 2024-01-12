@@ -32,13 +32,14 @@ async def register_user(user_data: SUserAuth):
 
 #Идёт проверка по логину и паролю, а не email.
 @router_auth.post("/login")
-async def login_user(response: Response, user_data: SUser):
+async def login_user(response: Response, user_data: SUser) -> str:
     user = await authenticate_user(user_data.username, user_data.password)
     access_token = create_access_token({"sub": str(user.username)})
     response.set_cookie("article_access_token", access_token, httponly=True)
-    return {"access_token": access_token}
+    return "ЗАЛОГИНИЛСЯ"
 
 
 @router_auth.post("/logout")
 async def logout_user(response: Response):
     response.delete_cookie("article_access_token")
+    return "Разлогинился"
