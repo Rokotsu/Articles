@@ -37,7 +37,7 @@ class IncorrectTokenFormatException(ArticleException):
 class UserIsNotPresentException(ArticleException):
     status_code = status.HTTP_401_UNAUTHORIZED
 
-class RoomCannotBeBooked(ArticleException):
+class ArticleCannotBeAddException(ArticleException):
     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
     detail="Не удалось добавить статью ввиду неизвестной ошибки"
 
