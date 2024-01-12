@@ -1,6 +1,4 @@
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
-
-
 from app.database import Base
 
 class Articles(Base):
