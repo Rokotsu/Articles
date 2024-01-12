@@ -43,4 +43,4 @@ class RoomCannotBeBooked(ArticleException):
 
 class CannotAddDataToDatabase(ArticleException):
     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-    detail="Не удалось добавить статью"
+    detail="Что-то не удалось"
