@@ -7,7 +7,7 @@ from app.exceptions import (
 from app.users.auth import authenticate_user, create_access_token, get_password_hash
 from app.users.dao import UserDAO
 from app.users.models import Users
-from app.users.schemas import SUserAuth
+from app.users.schemas import SUserAuth, SUser
 
 router_auth = APIRouter(
     prefix="/auth",
@@ -32,13 +32,13 @@ async def register_user(user_data: SUserAuth):
 
 #Идёт проверка по логину и паролю, а не email.
 @router_auth.post("/login")
-async def login_user(response: Response, user_data: SUserAuth):
+async def login_user(response: Response, user_data: SUser):
     user = await authenticate_user(user_data.username, user_data.password)
-    access_token = create_access_token({"sub": str(user.id)})
-    response.set_cookie("booking_access_token", access_token, httponly=True)
+    access_token = create_access_token({"sub": str(user.username)})
+    response.set_cookie("article_access_token", access_token, httponly=True)
     return {"access_token": access_token}
 
 
 @router_auth.post("/logout")
 async def logout_user(response: Response):
-    response.delete_cookie("booking_access_token")
+    response.delete_cookie("article_access_token")
