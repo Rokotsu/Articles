@@ -12,7 +12,7 @@ from app.users.dao import UserDAO
 
 
 def get_token(request: Request):
-    token = request.cookies.get("booking_access_token")
+    token = request.cookies.get("article_access_token")
     if not token:
         raise TokenAbsentException
     return token
@@ -27,10 +27,10 @@ async def get_current_user(token: str = Depends(get_token)):
         raise TokenExpiredException
     except JWTError:
         raise IncorrectTokenFormatException
-    user_id: str = payload.get("sub")
-    if not user_id:
+    username: str = payload.get("sub")
+    if not username:
         raise UserIsNotPresentException
-    user = await UserDAO.find_one_or_none(id=int(user_id))
+    user = await UserDAO.find_one_or_none(username=username)
     if not user:
         raise UserIsNotPresentException
 

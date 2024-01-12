@@ -11,3 +11,5 @@ class SAtricles(BaseModel):
 class SNewArticle(BaseModel):
     title: str
     content: str
+
+
