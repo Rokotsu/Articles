@@ -9,9 +9,9 @@ class BaseDAO:
     model = None
 
     @classmethod
-    async def find_by_title(cls, title: str):
+    async def find_by_username(cls, username_author: str):
         async with async_session_maker() as session:
-            query = select(cls.model).filter_by(str=title)
+            query = select(cls.model).filter_by(username=username_author)
             result = await session.execute(query)
             return result.mappings().one_or_none()
 
