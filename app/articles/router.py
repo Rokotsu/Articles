@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends
 # from pydantic import TypeAdapter, model_validator
 
@@ -14,7 +16,7 @@ router_articles = APIRouter(
 
 @router_articles.get("")
 async def get_articles(user: Users = Depends(get_current_user)) -> list[SArticles]:
-    return await AtricleDAO.find_all(users=user.username)
+    return await AtricleDAO.find_all()
 
 
 @router_articles.post("", status_code=201)
@@ -23,13 +25,9 @@ async def add_article(
         user: Users = Depends(get_current_user),
 ):
     writing = await AtricleDAO.add_article(
-        user.username,
-        article.content,
-        article.date_publication,
-        article.author,
+
     )
     if not article:
         raise ArticleCannotBeAddException
-    # article_dict = TypeAdapter.validate_python(SArticles, writing).dict()
     return "all_good"
 
