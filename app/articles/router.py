@@ -25,7 +25,9 @@ async def add_article(
         user: Users = Depends(get_current_user),
 ):
     writing = await AtricleDAO.add_article(
-
+        title=article.title,
+        content=article.content,
+        author=user.username
     )
     if not article:
         raise ArticleCannotBeAddException
