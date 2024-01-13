@@ -19,10 +19,8 @@ class AtricleDAO(BaseDAO):
         title: str,
         content: str,
         author: str,
-        date_publication: Optional[datetime] = None
+        date_publication=datetime.now().date()
     ):
-        if date_publication is None:
-            date_publication = datetime.now()
         try:
             async with async_session_maker() as session:
                 add_article = (
