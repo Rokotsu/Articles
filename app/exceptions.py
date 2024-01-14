@@ -13,6 +13,10 @@ class UserAlreadyExistsException(ArticleException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Пользователь уже существует"
 
+class EmailAlreadyExistsException(ArticleException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = "Почта уже существует"
+
 
 class IncorrectEmailOrPasswordException(ArticleException):
     status_code = status.HTTP_401_UNAUTHORIZED
@@ -56,3 +60,7 @@ class CannotDeleteArticleException(ArticleException):
 class CannotFindArticleException(ArticleException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Нет такой статьи"
+
+class ArticleCannotBeEditException(ArticleException):
+    status_code=status.HTTP_406_NOT_ACCEPTABLE
+    detail="Не удалось обновить ошибку"
