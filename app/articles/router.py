@@ -1,4 +1,4 @@
-
+from datetime import datetime
 
 from fastapi import APIRouter, Depends
 
@@ -7,7 +7,8 @@ from app.articles.schemas import SArticles, SNewArticles
 from app.users.dependencies import get_current_user
 from app.users.models import Users
 from app.articles.dao import AtricleDAO
-from app.exceptions import TitleAlreadyExistsException, CannotDeleteArticleException, CannotFindArticleException, CannotChangeArticleException
+from app.exceptions import TitleAlreadyExistsException, CannotDeleteArticleException, CannotFindArticleException, \
+    CannotChangeArticleException, ArticleCannotBeAddException
 
 router_articles = APIRouter(
     prefix="/articles",
@@ -31,26 +32,33 @@ async def add_article(
         user: Users = Depends(get_current_user),
 ):
     """
-        Добавление новой статьи.
+    Add a new article.
 
-        Args: \n
-            article (SNewArticles): добавление статьи(заголовк и контент). \n
-            user (Users): Пользователь, который добавил статью а так же проверка на аутентификацию. \n
+    Args: \n
+        article (SNewArticles): The new article to add (title and content). \n
+        user (Users): The user who added the article and authentication check. \n
 
-        Raises: \n
-            TitleAlreadyExistsException: Если заголовок для статьи уже существует. \n
+    Raises: \n
+        TitleAlreadyExistsException: If the article title already exists. \n
 
-        Returns: \n
-            str: "all_good" Если статья была успешно добавлена.\n
+    Returns: \n
+        str: "all_good" if the article was successfully added. \n
     """
-    await AtricleDAO.add_article(
-        title=article.title,
-        content=article.content,
-        author=user.username
-    )
-    if not article:
+    try:
+        article_data = {
+            "title": article.title,
+            "content": article.content,
+            "author": user.username,
+            "date_publication": datetime.now().date()
+        }
+        existing_article = await AtricleDAO.find_one_or_none(title=article.title)
+        if existing_article:
+            raise TitleAlreadyExistsException
+        else:
+            await AtricleDAO.add_article(article_data)
+            return "all_good"
+    except ArticleCannotBeAddException:
         raise TitleAlreadyExistsException
-    return "all_good"
 
 #редактирование статьи, с проверкой на атентификацию и роль
 @router_articles.put("/{title_name}", status_code=201)

@@ -12,33 +12,13 @@ class AtricleDAO(BaseDAO):
     model = Articles
 
     @classmethod
-    async def add_article(
-        cls,
-        title: str,
-        content: str,
-        author: str,
-        date_publication=datetime.now().date()
-    ):
+    async def add_article(cls, article_data: dict):
         try:
             async with async_session_maker() as session:
-                add_article = (
-                    insert(Articles)
-                    .values(
-                        title=title,
-                        content=content,
-                        date_publication=date_publication,
-                        author=author
-                    )
-                    .returning(
-                        Articles.title,
-                        Articles.content,
-                        Articles.date_publication,
-                        Articles.author
-                    )
-                )
-                new_article = await session.execute(add_article)
+                query = insert(cls.model).values(**article_data)
+                result = await session.execute(query)
                 await session.commit()
-                return new_article.mappings().one()
+                return result
         except ArticleCannotBeAddException:
             raise ArticleCannotBeAddException
 
