@@ -22,6 +22,20 @@ router_users = APIRouter(
 #Регистрация юзера
 @router_auth.post("/register", status_code=201)
 async def register_user(user_data: SUserAuth):
+    """
+        Регистрация нового пользователя.
+
+        Args: \n
+            user_data (SUserAuth): Данные пользователя (имя пользователя, email, пароль). \n
+
+        Raises: \n
+            UserAlreadyExistsException: Если пользователь с таким именем уже существует. \n
+            EmailAlreadyExistsException: Если пользователь с таким email уже существует. \n
+            CannotAddDataToDatabase: Если не удалось добавить пользователя в базу данных. \n
+
+        Returns: \n
+            str: "User created" Если пользователь был успешно зарегистрирован. \n
+    """
     existing_user = await UserDAO.find_one_or_none(username=user_data.username)
     if existing_user:
         raise UserAlreadyExistsException
@@ -36,6 +50,16 @@ async def register_user(user_data: SUserAuth):
 #Идёт проверка по логину и паролю, а не email.
 @router_auth.post("/login")
 async def login_user(response: Response, user_data: SUser) -> str:
+    """
+        Авторизация пользователя.
+
+        Args: \n
+            response (Response): Ответ сервера. \n
+            user_data (SUser): Данные пользователя (имя пользователя, пароль). \n
+
+        Returns: \n
+            str: "Logged in" Если пользователь успешно авторизован. \n
+    """
     user = await authenticate_user(user_data.username, user_data.password)
     access_token = create_access_token({"sub": str(user.username)})
     response.set_cookie("article_access_token", access_token, httponly=True)
@@ -44,5 +68,14 @@ async def login_user(response: Response, user_data: SUser) -> str:
 
 @router_auth.post("/logout")
 async def logout_user(response: Response):
+    """
+        Разлогинивание пользователя.
+
+        Args: \n
+            response (Response): Ответ сервера. \n
+
+        Returns: \n
+            str: "Logged out" Если пользователь успешно разлогинился. \n
+    """
     response.delete_cookie("article_access_token")
     return "Разлогинился"

@@ -64,3 +64,7 @@ class CannotFindArticleException(ArticleException):
 class ArticleCannotBeEditException(ArticleException):
     status_code=status.HTTP_406_NOT_ACCEPTABLE
     detail="Не удалось обновить ошибку"
+
+class CannotChangeArticleException(ArticleException):
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    detail = "Не удалось поменять статью"
