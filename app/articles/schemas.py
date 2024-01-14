@@ -17,3 +17,4 @@ class SNewArticles(BaseModel):
     content: str
 
 
+

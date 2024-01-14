@@ -44,3 +44,7 @@ class ArticleCannotBeAddException(ArticleException):
 class CannotAddDataToDatabase(ArticleException):
     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
     detail="Что-то не удалось"
+
+class TitleAlreadyExistsException(ArticleException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = "Заголовок уже существует"

@@ -7,7 +7,7 @@ from app.articles.schemas import SArticles, SNewArticles
 from app.users.dependencies import get_current_user
 from app.users.models import Users
 from app.articles.dao import AtricleDAO
-from app.exceptions import ArticleCannotBeAddException
+from app.exceptions import TitleAlreadyExistsException
 
 router_articles = APIRouter(
     prefix="/articles",
@@ -30,6 +30,13 @@ async def add_article(
         author=user.username
     )
     if not article:
-        raise ArticleCannotBeAddException
+        raise TitleAlreadyExistsException
     return "all_good"
+
+@router_articles.delete("/{title_name}")
+async def remove_article(
+    title_name: str,
+    current_user: Users = Depends(get_current_user),
+):
+    await AtricleDAO.delete(title=title_name, author=current_user.username)
 

@@ -43,3 +43,4 @@ class AtricleDAO(BaseDAO):
                 return new_article.mappings().one()
         except ArticleCannotBeAddException:
             raise ArticleCannotBeAddException
+
