@@ -48,3 +48,11 @@ class CannotAddDataToDatabase(ArticleException):
 class TitleAlreadyExistsException(ArticleException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Заголовок уже существует"
+
+class CannotDeleteArticleException(ArticleException):
+    status_code = status.HTTP_403_FORBIDDEN
+    detail = "Вы не можете удалить статью"
+
+class CannotFindArticleException(ArticleException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Нет такой статьи"

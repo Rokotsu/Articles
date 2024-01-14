@@ -7,7 +7,7 @@ from app.articles.schemas import SArticles, SNewArticles
 from app.users.dependencies import get_current_user
 from app.users.models import Users
 from app.articles.dao import AtricleDAO
-from app.exceptions import TitleAlreadyExistsException
+from app.exceptions import TitleAlreadyExistsException, CannotDeleteArticleException, CannotFindArticleException
 
 router_articles = APIRouter(
     prefix="/articles",
@@ -38,5 +38,20 @@ async def remove_article(
     title_name: str,
     current_user: Users = Depends(get_current_user),
 ):
-    await AtricleDAO.delete(title=title_name, author=current_user.username)
+
+    existing_article = await AtricleDAO.find_one_or_none(title=title_name)
+
+    if existing_article:
+            if (
+                    current_user.username == existing_article["author"]
+                    or current_user.role == "admin"
+            ):
+                await AtricleDAO.delete(title=title_name, author=current_user.username)
+                return "Success edited"
+            else:
+                raise CannotDeleteArticleException
+    else:
+        raise CannotFindArticleException
+
+
 
