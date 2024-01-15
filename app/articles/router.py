@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from fastapi import APIRouter, Depends
 
@@ -6,14 +7,15 @@ from fastapi import APIRouter, Depends
 from app.articles.schemas import SArticles, SNewArticles
 from app.users.dependencies import get_current_user
 from app.users.models import Users
-from app.articles.dao import AtricleDAO
+from app.articles.dao import ArticleDAO
 from app.exceptions import TitleAlreadyExistsException, CannotDeleteArticleException, CannotFindArticleException, \
-    CannotChangeArticleException, ArticleCannotBeAddException
+    CannotChangeArticleException, ArticleCannotBeAddException, CannotFindDateException, CannotFindAuthorException
 
 router_articles = APIRouter(
     prefix="/articles",
     tags=["Статьи"],
 )
+
 #Получение всех статей
 @router_articles.get("")
 async def get_articles() -> list[SArticles]:
@@ -23,7 +25,36 @@ async def get_articles() -> list[SArticles]:
         Returns:  \n
             list[SArticles]: Список из всех статей  \n
     """
-    return await AtricleDAO.find_all()
+    return await ArticleDAO.find_all()
+
+@router_articles.get("/{by_name}")
+async def get_article_by_author(user) -> list[SArticles]:
+    """
+        Получение всех статьей по автору, без регистрации.
+
+        Returns: \n
+            list[SArticles]: Список из всех статей по автору \n
+    """
+    try:
+        return await ArticleDAO.find_by_username(author=user)
+    except:
+        raise CannotFindAuthorException
+
+@router_articles.get("/{by_date}")
+async def get_article_by_date(date) -> list[SArticles]:
+    """
+        Получение всех статьей по автору, без регистрации.
+
+        Returns: \n
+            list[SArticles]: Список из всех статей по дате публикации \n
+    """
+    try:
+        return await ArticleDAO.find_by_date(datee=date)
+    except:
+        raise CannotFindDateException
+
+
+
 
 #создание статьи, с проверкой на атентификацию
 @router_articles.post("", status_code=201)
@@ -51,11 +82,11 @@ async def add_article(
             "author": user.username,
             "date_publication": datetime.now().date()
         }
-        existing_article = await AtricleDAO.find_one_or_none(title=article.title)
+        existing_article = await ArticleDAO.find_one_or_none(title=article.title)
         if existing_article:
             raise TitleAlreadyExistsException
         else:
-            await AtricleDAO.add_article(article_data)
+            await ArticleDAO.add_article(article_data)
             return "all_good"
     except ArticleCannotBeAddException:
         raise TitleAlreadyExistsException
@@ -82,10 +113,10 @@ async def edit(
         Returns: \n
             str: "success" если статья изменена успешно. \n
     """
-    existing_article = await AtricleDAO.find_one_or_none(title=title_name)
+    existing_article = await ArticleDAO.find_one_or_none(title=title_name)
     if existing_article:
             if (current_user.username == existing_article["author"] or current_user.role == "admin") and article_data:
-                await AtricleDAO.put_article(
+                await ArticleDAO.put_article(
                 article_title=title_name,
                 article_data=article_data.dict()
                 )
@@ -116,14 +147,14 @@ async def remove_article(
            str: "Success edited" если статья была успешно удалена. \n
     """
 
-    existing_article = await AtricleDAO.find_one_or_none(title=title_name)
+    existing_article = await ArticleDAO.find_one_or_none(title=title_name)
 
     if existing_article:
             if (
                     current_user.username == existing_article["author"]
                     or current_user.role == "admin"
             ):
-                await AtricleDAO.delete(title=title_name, author=current_user.username)
+                await ArticleDAO.delete(title=title_name, author=current_user.username)
                 return "Success edited"
             else:
                 raise CannotDeleteArticleException

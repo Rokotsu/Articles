@@ -1,14 +1,15 @@
 from typing import Optional
 
 from app.dao.base import BaseDAO
-from sqlalchemy import insert, delete, update
+from sqlalchemy import insert, delete, update, select
 from app.articles.models import Articles
 from app.database import async_session_maker
-from app.exceptions import ArticleCannotBeAddException, ArticleCannotBeEditException
+from app.exceptions import ArticleCannotBeAddException, ArticleCannotBeEditException, CannotFindAuthorException, \
+    CannotFindDateException
 from datetime import datetime
 
 #Для взаимодействия статьи с БД.
-class AtricleDAO(BaseDAO):
+class ArticleDAO(BaseDAO):
     model = Articles
 
     @classmethod
@@ -38,4 +39,24 @@ class AtricleDAO(BaseDAO):
                 await session.commit()
                 return result
         except ArticleCannotBeEditException:
-                raise ArticleCannotBeEditException
+            raise ArticleCannotBeEditException
+
+    @classmethod
+    async def find_by_username(cls, **filter_by: str):
+        try:
+            async with async_session_maker() as session:
+                query = select(cls.model).where(cls.model.author == filter_by['author'])
+                result = await session.execute(query)
+                return result.scalars().all()
+        except CannotFindAuthorException:
+            raise CannotFindAuthorException
+
+    @classmethod
+    async def find_by_date(cls, datee: datetime):
+        try:
+            async with async_session_maker() as session:
+                query = select(cls.model).where(cls.model.date_publication == datee)
+                result = await session.execute(query)
+                return result.mappings().all()
+        except CannotFindDateException:
+            raise CannotFindDateException

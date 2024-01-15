@@ -68,3 +68,11 @@ class ArticleCannotBeEditException(ArticleException):
 class CannotChangeArticleException(ArticleException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
     detail = "Не удалось поменять статью"
+
+class CannotFindAuthorException(ArticleException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Нет такого автора"
+
+class CannotFindDateException(ArticleException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Нет публикаций по такой дате"
