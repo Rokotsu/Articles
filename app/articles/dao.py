@@ -12,6 +12,7 @@ from datetime import datetime
 class ArticleDAO(BaseDAO):
     model = Articles
 
+    #Добавление статьи
     @classmethod
     async def add_article(cls, article_data: dict):
         try:
@@ -23,6 +24,7 @@ class ArticleDAO(BaseDAO):
         except ArticleCannotBeAddException:
             raise ArticleCannotBeAddException
 
+    #удаление статьи
     @classmethod
     async def delete(cls, **filter_by):
         async with async_session_maker() as session:
@@ -30,6 +32,7 @@ class ArticleDAO(BaseDAO):
             await session.execute(query)
             await session.commit()
 
+    #обновление статьи, поиск по заголовку
     @classmethod
     async def put_article(cls, article_title: str, article_data: dict):
         try:
@@ -41,6 +44,7 @@ class ArticleDAO(BaseDAO):
         except ArticleCannotBeEditException:
             raise ArticleCannotBeEditException
 
+    #найти статью по автору
     @classmethod
     async def find_by_username(cls, **filter_by: str):
         try:
@@ -51,6 +55,8 @@ class ArticleDAO(BaseDAO):
         except CannotFindAuthorException:
             raise CannotFindAuthorException
 
+
+    #Найти статью по дате
     @classmethod
     async def find_by_date(cls, datee: datetime) -> int:
         try:
