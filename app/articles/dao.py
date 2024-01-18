@@ -52,7 +52,7 @@ class ArticleDAO(BaseDAO):
             raise CannotFindAuthorException
 
     @classmethod
-    async def find_by_date(cls, datee: datetime):
+    async def find_by_date(cls, datee: datetime) -> int:
         try:
             async with async_session_maker() as session:
                 query = select(cls.model).where(cls.model.date_publication == datee)

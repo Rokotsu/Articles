@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from fastapi import APIRouter, Depends
 
@@ -41,7 +40,7 @@ async def get_article_by_author(user) -> list[SArticles]:
         raise CannotFindAuthorException
 
 @router_articles.get("/{by_date}")
-async def get_article_by_date(date) -> list[SArticles]:
+async def get_article_by_date(date: datetime) -> list[SArticles]:
     """
         Получение всех статьей по автору, без регистрации.
 
