@@ -1,6 +1,8 @@
+import asyncio
 from datetime import datetime
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 
 from app.articles.schemas import SArticles, SNewArticles
@@ -17,6 +19,7 @@ router_articles = APIRouter(
 
 #Получение всех статей
 @router_articles.get("")
+@cache(expire=30)
 async def get_articles() -> list[SArticles]:
     """
         Получение всех статьей, без регистрации.
@@ -27,6 +30,7 @@ async def get_articles() -> list[SArticles]:
     return await ArticleDAO.find_all()
 
 @router_articles.get("/{by_name}")
+@cache(expire=30)
 async def get_article_by_author(user) -> list[SArticles]:
     """
         Получение всех статьей по автору, без регистрации.
@@ -40,6 +44,7 @@ async def get_article_by_author(user) -> list[SArticles]:
         raise CannotFindAuthorException
 
 @router_articles.get("/{by_date}")
+@cache(expire=30)
 async def get_article_by_date(date: datetime) -> list[SArticles]:
     """
         Получение всех статьей по автору, без регистрации.
