@@ -1,14 +1,20 @@
 [
-  {
-    "email": "john.doe@example.com",
-    "hashed_password": "$2b$10$X.Y.Z/1234567890123456789012345678901234567890123456789012345678"
-  },
-  {
-    "email": "john.doe@example.com",
-    "hashed_password": "$2b$10$X.901234567890123456789015678Y.Z/1234567890123456DDSAASRFGsdSsasasfR78"
-  },
-  {
-    "email": "john.doe@example.com",
-    "hashed_password": "$2b$10$X.Y.Z/12345678sasa12DF90123456789089015678Y.Z/1234567890123456sdSsas45678"
-  },
+    {
+        "username": "Rebeca",
+        "email": "emaile@email.com",
+        "hashed_password": "$2b$12$ib8N/MddMjSxNs4UOF69c.KuO4CyglQHcNATYpHcKJJn5rbltYNFG",
+        "role": "user"
+    },
+    {
+        "username": "testuser2",
+        "email": "emaile1@email.com",
+        "hashed_password": "$2b$12$ib8N/MddMjSxNs4UO69c.KATYpHcKJJn5ruO4CyglQHcNbltYNFG",
+        "role": "user"
+    },
+    {
+        "username": "roma",
+        "email": "artem@email.com",
+        "hashed_password": "$2b$12$SwAOsDqK7tjnvIcjlTAUvuX6K4xv/zUvqp8Y2oSCtqVv4f/XCB2Bi",
+        "role": "admin"
+    }
 ]
