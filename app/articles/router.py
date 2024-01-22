@@ -18,7 +18,7 @@ router_articles = APIRouter(
 )
 
 #Получение всех статей
-@router_articles.get("")
+@router_articles.get("/all")
 @cache(expire=30)
 async def get_articles() -> list[SArticles]:
     """
@@ -29,7 +29,7 @@ async def get_articles() -> list[SArticles]:
     """
     return await ArticleDAO.find_all()
 
-@router_articles.get("/{by_name}")
+@router_articles.get("/author/{by_name}")
 @cache(expire=30)
 async def get_article_by_author(user) -> list[SArticles]:
     """
@@ -43,7 +43,7 @@ async def get_article_by_author(user) -> list[SArticles]:
     except:
         raise CannotFindAuthorException
 
-@router_articles.get("/{by_date}")
+@router_articles.get("/date/{by_date}")
 @cache(expire=30)
 async def get_article_by_date(date: datetime) -> list[SArticles]:
     """
@@ -61,7 +61,7 @@ async def get_article_by_date(date: datetime) -> list[SArticles]:
 
 
 #создание статьи, с проверкой на атентификацию
-@router_articles.post("", status_code=201)
+@router_articles.post("/create", status_code=201)
 async def add_article(
         article: SNewArticles,
         user: Users = Depends(get_current_user),

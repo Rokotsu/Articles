@@ -62,3 +62,19 @@ async def ac(): #AsycnClient
     "Асинхронный клиент для тестирования эндпоинтов"
     async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
         yield ac
+
+
+@pytest.fixture(scope="session")
+async def authenticated_ac():
+    "Асинхронный аутентифицированный клиент для тестирования эндпоинтов"
+    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+        await ac.post(
+            "/auth/login",
+            json={
+                "username": "test",
+                "password": "test",
+            },
+        )
+        print(ac.cookies["article_access_token"])
+        # assert ac.cookies["article_access_token"]
+        yield ac
