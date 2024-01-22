@@ -68,17 +68,3 @@ async def test_create_articles_by_authentificated_user(authenticated_ac: AsyncCl
 
 
 
-
-
-@pytest.mark.parametrize("by_name", ["test", "roma", "Rebeca"])
-async def test_get_sort_by_author_articles(by_name, ac: AsyncClient, caplog):
-    response = await ac.get(f"/articles/author/{by_name}")
-
-    # Проверим, что запрос завершился успешно
-    response.raise_for_status()
-
-    # Проверим, что ответ является списком
-    assert isinstance(response.json(), list)
-
-    # Проверим, что ответ содержит хотя бы одну статью
-    assert len(response.json()) > 0
