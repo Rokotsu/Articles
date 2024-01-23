@@ -96,7 +96,7 @@ async def add_article(
         raise TitleAlreadyExistsException
 
 #редактирование статьи, с проверкой на атентификацию и роль
-@router_articles.put("/{title_name}", status_code=201)
+@router_articles.put("/update/{title_name}", status_code=201)
 async def edit(
         article_data: SNewArticles,
         title_name: str,
@@ -131,7 +131,7 @@ async def edit(
         raise CannotFindArticleException
 
 #удаление статьи, с проверкой на атентификацию и роль
-@router_articles.delete("/{title_name}")
+@router_articles.delete("/delete/{title_name}")
 async def remove_article(
     title_name: str,
     current_user: Users = Depends(get_current_user),

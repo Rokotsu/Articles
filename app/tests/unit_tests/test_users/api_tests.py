@@ -67,4 +67,61 @@ async def test_create_articles_by_authentificated_user(authenticated_ac: AsyncCl
     assert response.status_code == 201
 
 
+async def test_create_articles_by_non_authentificated_user(ac: AsyncClient):
+    response = await ac.post(
+        "/articles/create", params={"title": "ldslsd", "contents": "ldslfdloe"}
+    )
+    assert response.status_code == 401
 
+
+async def test_edit_articles_by_non_authentificated_user(ac: AsyncClient):
+    response = await ac.put(
+        f"/articles/update/The Benefits of Meditation",
+        params={"title": "Edit title", "content": "Edit contents"},
+    )
+    assert response.status_code == 401
+
+
+async def test_edit_articles_by_authentificated_user(authenticated_ac: AsyncClient):
+    response = await authenticated_ac.put(
+        f"/articles/update/The Benefits of Meditation", json={"title": "Edit title", "content": "Edit contents"}
+    )
+    assert response.status_code == 201
+
+
+async def test_edit_articles_by_authentificated_user_without_role(
+    authenticated_ac: AsyncClient,
+):
+    response = await authenticated_ac.put(
+        f"/articles/edit/{4}", json={"title": "Edit title", "contents": "Edit contents"}
+    )
+    assert response.status_code == 404
+
+
+async def test_edit_articles_by_authentificated_user_when_article_not_found(
+    authenticated_ac: AsyncClient,
+):
+    response = await authenticated_ac.put(
+        f"/articles/edit/{100}",
+        json={"title": "Edit title", "contents": "Edit contents"},
+    )
+    assert response.status_code == 404
+
+
+async def test_delete_articles_by_authentificated_user(authenticated_ac: AsyncClient):
+    response = await authenticated_ac.delete(f"/articles/delete/Edit title")
+    assert response.status_code == 200
+
+
+async def test_delete_articles_by_authentificated_user_without_role(
+    authenticated_ac: AsyncClient,
+):
+    response = await authenticated_ac.delete(f"/articles/delete/{4}")
+    assert response.status_code == 404
+
+
+async def test_delete_articles_by_authentificated_user_when_article_not_found(
+    authenticated_ac: AsyncClient,
+):
+    response = await authenticated_ac.delete(f"/articles/delete/slddldldld")
+    assert response.status_code == 404
