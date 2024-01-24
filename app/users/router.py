@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Response
 
 from app.exceptions import (
     CannotAddDataToDatabase,
@@ -7,7 +7,6 @@ from app.exceptions import (
 )
 from app.users.auth import authenticate_user, create_access_token, get_password_hash
 from app.users.dao import UserDAO
-from app.users.models import Users
 from app.users.schemas import SUser, SUserAuth
 
 router_auth = APIRouter(
