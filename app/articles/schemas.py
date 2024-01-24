@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from datetime import date
+
+from pydantic import BaseModel
 
 
 class SArticles(BaseModel):
@@ -15,8 +16,5 @@ class SArticles(BaseModel):
 class SNewArticles(BaseModel):
     title: str
     content: str
-
-
-
 
 

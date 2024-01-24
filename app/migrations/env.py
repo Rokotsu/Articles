@@ -1,17 +1,16 @@
-from logging.config import fileConfig
 import sys
+from logging.config import fileConfig
 from os.path import abspath, dirname
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
+
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__))))) #пошаманили с деректориями
 
-from app.config import settings
-from app.database import settings
-from app.database import Base #Чтобы Alembic  видел, какие у нас есть модели
 from app.articles.models import Articles
+from app.config import settings
+from app.database import Base  # Чтобы Alembic  видел, какие у нас есть модели
+from app.database import settings
 from app.users.models import Users
 
 # this is the Alembic Config object, which provides

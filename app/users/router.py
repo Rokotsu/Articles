@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends, Response
 
 from app.exceptions import (
     CannotAddDataToDatabase,
-    UserAlreadyExistsException, EmailAlreadyExistsException
+    EmailAlreadyExistsException,
+    UserAlreadyExistsException,
 )
 from app.users.auth import authenticate_user, create_access_token, get_password_hash
 from app.users.dao import UserDAO
 from app.users.models import Users
-from app.users.schemas import SUserAuth, SUser
+from app.users.schemas import SUser, SUserAuth
 
 router_auth = APIRouter(
     prefix="/auth",
@@ -19,22 +20,23 @@ router_users = APIRouter(
     tags=["Пользователи"],
 )
 
-#Регистрация юзера
+
+# Регистрация юзера
 @router_auth.post("/register", status_code=201)
 async def register_user(user_data: SUserAuth):
     """
-        Регистрация нового пользователя.
+    Регистрация нового пользователя.
 
-        Args: \n
-            user_data (SUserAuth): Данные пользователя (имя пользователя, email, пароль). \n
+    Args: \n
+        user_data (SUserAuth): Данные пользователя (имя пользователя, email, пароль). \n
 
-        Raises: \n
-            UserAlreadyExistsException: Если пользователь с таким именем уже существует. \n
-            EmailAlreadyExistsException: Если пользователь с таким email уже существует. \n
-            CannotAddDataToDatabase: Если не удалось добавить пользователя в базу данных. \n
+    Raises: \n
+        UserAlreadyExistsException: Если пользователь с таким именем уже существует. \n
+        EmailAlreadyExistsException: Если пользователь с таким email уже существует. \n
+        CannotAddDataToDatabase: Если не удалось добавить пользователя в базу данных. \n
 
-        Returns: \n
-            str: "User created" Если пользователь был успешно зарегистрирован. \n
+    Returns: \n
+        str: "User created" Если пользователь был успешно зарегистрирован. \n
     """
     existing_user = await UserDAO.find_one_or_none(username=user_data.username)
     if existing_user:
@@ -43,22 +45,28 @@ async def register_user(user_data: SUserAuth):
     if existing_email:
         raise EmailAlreadyExistsException
     hashed_password = get_password_hash(user_data.password)
-    new_user = await UserDAO.add(username=user_data.username, email=user_data.email, hashed_password=hashed_password, role="user")
+    new_user = await UserDAO.add(
+        username=user_data.username,
+        email=user_data.email,
+        hashed_password=hashed_password,
+        role="user",
+    )
     if not new_user:
         raise CannotAddDataToDatabase
 
-#Идёт проверка по логину и паролю, а не email.
+
+# Идёт проверка по логину и паролю, а не email.
 @router_auth.post("/login")
 async def login_user(response: Response, user_data: SUser) -> str:
     """
-        Авторизация пользователя.
+    Авторизация пользователя.
 
-        Args: \n
-            response (Response): Ответ сервера. \n
-            user_data (SUser): Данные пользователя (имя пользователя, пароль). \n
+    Args: \n
+        response (Response): Ответ сервера. \n
+        user_data (SUser): Данные пользователя (имя пользователя, пароль). \n
 
-        Returns: \n
-            str: "Logged in" Если пользователь успешно авторизован. \n
+    Returns: \n
+        str: "Logged in" Если пользователь успешно авторизован. \n
     """
     user = await authenticate_user(user_data.username, user_data.password)
     access_token = create_access_token({"sub": str(user.username)})
@@ -69,13 +77,13 @@ async def login_user(response: Response, user_data: SUser) -> str:
 @router_auth.post("/logout")
 async def logout_user(response: Response):
     """
-        Разлогинивание пользователя.
+    Разлогинивание пользователя.
 
-        Args: \n
-            response (Response): Ответ сервера. \n
+    Args: \n
+        response (Response): Ответ сервера. \n
 
-        Returns: \n
-            str: "Logged out" Если пользователь успешно разлогинился. \n
+    Returns: \n
+        str: "Logged out" Если пользователь успешно разлогинился. \n
     """
     response.delete_cookie("article_access_token")
     return "Разлогинился"

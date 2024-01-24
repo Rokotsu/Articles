@@ -13,6 +13,7 @@ class UserAlreadyExistsException(ArticleException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Пользователь уже существует"
 
+
 class EmailAlreadyExistsException(ArticleException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Почта уже существует"
@@ -41,37 +42,46 @@ class IncorrectTokenFormatException(ArticleException):
 class UserIsNotPresentException(ArticleException):
     status_code = status.HTTP_401_UNAUTHORIZED
 
+
 class ArticleCannotBeAddException(ArticleException):
-    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-    detail="Не удалось добавить статью ввиду неизвестной ошибки"
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось добавить статью ввиду неизвестной ошибки"
+
 
 class CannotAddDataToDatabase(ArticleException):
-    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-    detail="Что-то не удалось"
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Что-то не удалось"
+
 
 class TitleAlreadyExistsException(ArticleException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Заголовок уже существует"
 
+
 class CannotDeleteArticleException(ArticleException):
     status_code = status.HTTP_403_FORBIDDEN
     detail = "Вы не можете удалить статью"
+
 
 class CannotFindArticleException(ArticleException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Нет такой статьи"
 
+
 class ArticleCannotBeEditException(ArticleException):
-    status_code=status.HTTP_406_NOT_ACCEPTABLE
-    detail="Не удалось обновить ошибку"
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    detail = "Не удалось обновить ошибку"
+
 
 class CannotChangeArticleException(ArticleException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
     detail = "Не удалось поменять статью"
 
+
 class CannotFindAuthorException(ArticleException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Нет такого автора"
+
 
 class CannotFindDateException(ArticleException):
     status_code = status.HTTP_404_NOT_FOUND

@@ -1,19 +1,18 @@
 import asyncio
+import json
 from datetime import datetime
 
 import pytest
-import json
-
-from sqlalchemy import insert
-from httpx import AsyncClient
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
+from sqlalchemy import insert
 
-
-from app.config import settings
-from app.database import Base, async_session_maker,  engine
 from app.articles.models import Articles
-from app.users.models import Users
+from app.config import settings
+from app.database import Base, async_session_maker, engine
 from app.main import app as fastapi_app
+from app.users.models import Users
+
 
 @pytest.fixture(scope="session", autouse=True)
 async def prepare_database():
@@ -34,13 +33,12 @@ async def prepare_database():
     articles = open_mock_json("articles")
 
     for article in articles:
-        article["date_publication"] = datetime.strptime(article["date_publication"], "%Y-%m-%d")
+        article["date_publication"] = datetime.strptime(
+            article["date_publication"], "%Y-%m-%d"
+        )
 
     async with async_session_maker() as session:
-        for Model, values in [
-            (Users, users),
-            (Articles, articles)
-        ]:
+        for Model, values in [(Users, users), (Articles, articles)]:
             query = insert(Model).values(values)
             await session.execute(query)
 
@@ -58,7 +56,7 @@ def event_loop(request):
 
 
 @pytest.fixture(scope="function")
-async def ac(): #AsycnClient
+async def ac():  # AsycnClient
     "Асинхронный клиент для тестирования эндпоинтов"
     async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
         yield ac

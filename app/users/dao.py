@@ -7,7 +7,6 @@ from app.logger import logger
 from app.users.models import Users
 
 
-
 class UserDAO(BaseDAO):
     model = Users
 

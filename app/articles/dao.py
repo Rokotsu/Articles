@@ -1,18 +1,23 @@
-from typing import Optional
-
-from app.dao.base import BaseDAO
-from sqlalchemy import insert, delete, update, select
-from app.articles.models import Articles
-from app.database import async_session_maker
-from app.exceptions import ArticleCannotBeAddException, ArticleCannotBeEditException, CannotFindAuthorException, \
-    CannotFindDateException
 from datetime import datetime
 
-#Для взаимодействия статьи с БД.
+from sqlalchemy import delete, insert, select, update
+
+from app.articles.models import Articles
+from app.dao.base import BaseDAO
+from app.database import async_session_maker
+from app.exceptions import (
+    ArticleCannotBeAddException,
+    ArticleCannotBeEditException,
+    CannotFindAuthorException,
+    CannotFindDateException,
+)
+
+
+# Для взаимодействия статьи с БД.
 class ArticleDAO(BaseDAO):
     model = Articles
 
-    #Добавление статьи
+    # Добавление статьи
     @classmethod
     async def add_article(cls, article_data: dict):
         try:
@@ -24,7 +29,7 @@ class ArticleDAO(BaseDAO):
         except ArticleCannotBeAddException:
             raise ArticleCannotBeAddException
 
-    #удаление статьи
+    # удаление статьи
     @classmethod
     async def delete(cls, **filter_by):
         async with async_session_maker() as session:
@@ -32,7 +37,7 @@ class ArticleDAO(BaseDAO):
             await session.execute(query)
             await session.commit()
 
-    #обновление статьи, поиск по заголовку
+    # обновление статьи, поиск по заголовку
     @classmethod
     async def put_article(cls, article_title: str, article_data: dict):
         try:
@@ -44,19 +49,18 @@ class ArticleDAO(BaseDAO):
         except ArticleCannotBeEditException:
             raise ArticleCannotBeEditException
 
-    #найти статью по автору
+    # найти статью по автору
     @classmethod
     async def find_by_username(cls, **filter_by: str):
         try:
             async with async_session_maker() as session:
-                query = select(cls.model).where(cls.model.author == filter_by['author'])
+                query = select(cls.model).where(cls.model.author == filter_by["author"])
                 result = await session.execute(query)
                 return result.scalars().all()
         except CannotFindAuthorException:
             raise CannotFindAuthorException
 
-
-    #Найти статью по дате
+    # Найти статью по дате
     @classmethod
     async def find_by_date(cls, datee: datetime) -> int:
         try:
