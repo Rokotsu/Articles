@@ -7,11 +7,11 @@ from sqlalchemy import engine_from_config, pool
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__))))) #пошаманили с деректориями
 
-from app.articles.models import Articles # noqa
-from app.config import settings # noqa
-from app.database import Base  # noqa
+from app.articles.models import Articles
+from app.config import settings
+from app.database import Base
 from app.database import settings
-from app.users.models import Users # noqa
+from app.users.models import Users
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
