@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi_cache.decorator import cache
 
 from app.articles.dao import ArticleDAO
@@ -22,52 +23,41 @@ router_articles = APIRouter(
     tags=["Статьи"],
 )
 
-
-# Получение всех статей
-@router_articles.get("/all")
+@router_articles.get("/articles", response_model=list[SArticles])
 @cache(expire=30)
-async def get_articles() -> list[SArticles]:
+async def get_articles(
+    author_name: Optional[str] = Query(None, description="Filter articles by author"),
+    date_date: Optional[datetime] = Query(None, description="Filter articles by date")
+) -> list[SArticles]:
     """
-    Получение всех статьей, без регистрации.
+    Получение статей по автору и дате без регистрации
 
-    Returns:  \n
-        list[SArticles]: Список из всех статей  \n
-    """
-    return await ArticleDAO.find_all()
-
-
-@router_articles.get("/author/{by_name}")
-@cache(expire=30)
-async def get_article_by_author(user) -> list[SArticles]:
-    """
-    Получение всех статьей по автору, без регистрации.
+    Parameters: \n
+        author (str, optional): Фильтрация статей по автору. \n
+        date (datetime, optional): Фильтрация по дате. \n
 
     Returns: \n
-        list[SArticles]: Список из всех статей по автору \n
+        list[SArticles]: Список статей. \n
     """
-    try:
-        return await ArticleDAO.find_by_username(author=user)
-    except:
-        raise CannotFindAuthorException
+    if author_name:
+        try:
+            return await ArticleDAO.find_by_username(author=author_name)
+        except:
+            raise CannotFindAuthorException
+    elif date_date:
+        try:
+            return await ArticleDAO.find_by_date(datee=date_date)
+        except:
+            raise CannotFindDateException
+    else:
+        return await ArticleDAO.find_all()
 
 
-@router_articles.get("/date/{by_date}")
-@cache(expire=30)
-async def get_article_by_date(date: datetime) -> list[SArticles]:
-    """
-    Получение всех статьей по дате, без регистрации.
 
-    Returns: \n
-        list[SArticles]: Список из всех статей по дате публикации \n
-    """
-    try:
-        return await ArticleDAO.find_by_date(datee=date)
-    except:
-        raise CannotFindDateException
 
 
 # создание статьи, с проверкой на атентификацию
-@router_articles.post("/create", status_code=201)
+@router_articles.post("", status_code=201)
 async def add_article(
     article: SNewArticles,
     user: Users = Depends(get_current_user),
@@ -103,7 +93,7 @@ async def add_article(
 
 
 # редактирование статьи, с проверкой на атентификацию и роль
-@router_articles.put("/update/{title_name}", status_code=201)
+@router_articles.put("/{title_name}", status_code=201)
 async def edit(
     article_data: SNewArticles,
     title_name: str,
@@ -141,7 +131,7 @@ async def edit(
 
 
 # удаление статьи, с проверкой на атентификацию и роль
-@router_articles.delete("/delete/{title_name}")
+@router_articles.delete("/{title_name}")
 async def remove_article(
     title_name: str,
     current_user: Users = Depends(get_current_user),
