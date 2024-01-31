@@ -55,7 +55,7 @@ async def get_article_by_author(user) -> list[SArticles]:
 @cache(expire=30)
 async def get_article_by_date(date: datetime) -> list[SArticles]:
     """
-    Получение всех статьей по автору, без регистрации.
+    Получение всех статьей по дате, без регистрации.
 
     Returns: \n
         list[SArticles]: Список из всех статей по дате публикации \n
@@ -73,17 +73,17 @@ async def add_article(
     user: Users = Depends(get_current_user),
 ):
     """
-    Add a new article.
+    Добавление новой статьи
 
     Args: \n
-        article (SNewArticles): The new article to add (title and content). \n
-        user (Users): The user who added the article and authentication check. \n
+        article (SNewArticles): Новая статья для добавления (заголовок и контент) \n
+        user (Users): Пользователь который добавил статью и проверка на аутентификацию \n
 
     Raises: \n
-        TitleAlreadyExistsException: If the article title already exists. \n
+        409: Заголовок уже существует \n
 
     Returns: \n
-        str: "all_good" if the article was successfully added. \n
+        str: "Статья добавлена" \n
     """
     try:
         article_data = {
@@ -97,7 +97,7 @@ async def add_article(
             raise TitleAlreadyExistsException
         else:
             await ArticleDAO.add_article(article_data)
-            return "all_good"
+            return "Статья добавлена"
     except ArticleCannotBeAddException:
         raise TitleAlreadyExistsException
 
@@ -110,7 +110,7 @@ async def edit(
     current_user: Users = Depends(get_current_user),
 ) -> str:
     """
-    Edit an article.
+    Редактирование статьи
 
     Args: \n
         article_data (SNewArticles): Новые данные для статьи. \n
@@ -118,11 +118,11 @@ async def edit(
         current_user (Users): проверка на аутентификацию \n
 
     :Raises: \n
-        CannotChangeArticleException: Если статья не может быть изменена \n
-        CannotFindArticleException: Если не удаётся найти статью \n
+        406: Не удалось поменять статью \n
+        404: Нет такой статьи \n
 
     Returns: \n
-        str: "success" если статья изменена успешно. \n
+        str: "Успешно" если статья изменена успешно. \n
     """
     existing_article = await ArticleDAO.find_one_or_none(title=title_name)
     if existing_article:
@@ -133,7 +133,7 @@ async def edit(
             await ArticleDAO.put_article(
                 article_title=title_name, article_data=article_data.dict()
             )
-            return "success"
+            return "Успешно"
         else:
             raise CannotChangeArticleException
     else:
@@ -154,11 +154,11 @@ async def remove_article(
         current_user (Users): проверка на аутентификацию. \n
 
     Raises: \n
-        CannotDeleteArticleException: Если пользователь не автор статьи и не админ. \n
-        CannotFindArticleException: Если статьи не существует. \n
+        403: Пользователь не автор статьи и не админ. \n
+        404: Статьи не существует. \n
 
     Returns: \n
-        str: "Success edited" если статья была успешно удалена. \n
+        str: "Удалено" Статья была успешно удалена. \n
     """
 
     existing_article = await ArticleDAO.find_one_or_none(title=title_name)
@@ -169,7 +169,7 @@ async def remove_article(
             or current_user.role == "admin"
         ):
             await ArticleDAO.delete(title=title_name, author=current_user.username)
-            return "Success edited"
+            return "Удалено"
         else:
             raise CannotDeleteArticleException
     else:

@@ -30,12 +30,12 @@ async def register_user(user_data: SUserAuth):
         user_data (SUserAuth): Данные пользователя (имя пользователя, email, пароль). \n
 
     Raises: \n
-        UserAlreadyExistsException: Если пользователь с таким именем уже существует. \n
-        EmailAlreadyExistsException: Если пользователь с таким email уже существует. \n
-        CannotAddDataToDatabase: Если не удалось добавить пользователя в базу данных. \n
+        409: Пользователь с таким именем уже существует. \n
+        409: Пользователь с таким email уже существует. \n
+        500: Не удалось добавить пользователя в базу данных. \n
 
     Returns: \n
-        str: "User created" Если пользователь был успешно зарегистрирован. \n
+        str: "Зарегистрирован" Пользователь был успешно зарегистрирован. \n
     """
     existing_user = await UserDAO.find_one_or_none(username=user_data.username)
     if existing_user:
@@ -52,6 +52,7 @@ async def register_user(user_data: SUserAuth):
     )
     if not new_user:
         raise CannotAddDataToDatabase
+    return "Зарегистрирован"
 
 
 # Идёт проверка по логину и паролю, а не email.
@@ -65,12 +66,12 @@ async def login_user(response: Response, user_data: SUser) -> str:
         user_data (SUser): Данные пользователя (имя пользователя, пароль). \n
 
     Returns: \n
-        str: "Logged in" Если пользователь успешно авторизован. \n
+        str: "залогинился" Пользователь успешно авторизован. \n
     """
     user = await authenticate_user(user_data.username, user_data.password)
     access_token = create_access_token({"sub": str(user.username)})
     response.set_cookie("article_access_token", access_token, httponly=True)
-    return "ЗАЛОГИНИЛСЯ"
+    return "Залогинился"
 
 
 @router_auth.post("/logout")
@@ -82,7 +83,7 @@ async def logout_user(response: Response):
         response (Response): Ответ сервера. \n
 
     Returns: \n
-        str: "Logged out" Если пользователь успешно разлогинился. \n
+        str: "Разлогинился" Пользователь успешно разлогинился. \n
     """
     response.delete_cookie("article_access_token")
     return "Разлогинился"
