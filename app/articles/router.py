@@ -27,7 +27,7 @@ router_articles = APIRouter(
 @cache(expire=30)
 async def get_articles(
     author_name: Optional[str] = Query(None, description="Filter articles by author"),
-    date_date: Optional[datetime] = Query(None, description="Filter articles by date")
+    date_publication: Optional[datetime] = Query(None, description="Filter articles by date")
 ) -> list[SArticles]:
     """
     Получение статей по автору и дате без регистрации
@@ -44,9 +44,10 @@ async def get_articles(
             return await ArticleDAO.find_by_username(author=author_name)
         except:
             raise CannotFindAuthorException
-    elif date_date:
+    elif date_publication:
         try:
-            return await ArticleDAO.find_by_date(datee=date_date)
+            date_publication = datetime.strptime(date_publication, "%Y-%m-%d")
+            return await ArticleDAO.find_by_date(date_publication)
         except:
             raise CannotFindDateException
     else:

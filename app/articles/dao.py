@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from sqlalchemy import delete, insert, select, update
 
@@ -62,11 +62,11 @@ class ArticleDAO(BaseDAO):
 
     # Найти статью по дате
     @classmethod
-    async def find_by_date(cls, datee: datetime) -> int:
+    async def find_by_date(cls, date_publication: datetime):
         try:
             async with async_session_maker() as session:
-                query = select(cls.model).where(cls.model.date_publication == datee)
+                query = select(cls.model).where(cls.model.date_publication == date_publication)
                 result = await session.execute(query)
-                return result.mappings().all()
+                return result.scalars().all()
         except CannotFindDateException:
             raise CannotFindDateException
