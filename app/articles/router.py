@@ -27,7 +27,7 @@ router_articles = APIRouter(
 @cache(expire=30)
 async def get_articles(
     author_name: Optional[str] = Query(None, description="Filter articles by author"),
-    date_publication: Optional[datetime] = Query(None, description="Filter articles by date")
+    date_publication: Optional[str] = Query(None, description="Filter articles by date")
 ) -> list[SArticles]:
     """
     Получение статей по автору и дате без регистрации
