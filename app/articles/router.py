@@ -23,7 +23,7 @@ router_articles = APIRouter(
     tags=["Статьи"],
 )
 
-@router_articles.get("/articles", response_model=list[SArticles])
+@router_articles.get("", response_model=list[SArticles])
 @cache(expire=30)
 async def get_articles(
     author_name: Optional[str] = Query(None, description="Filter articles by author"),
