@@ -18,7 +18,8 @@
     ```bash 
     docker-compose build
     docker-compose up
-**Возникли проблемы при сборке?**: 
+**Возникли проблемы при сборке?**:
+   
     ```bash 
     docker-compose up --build
    
