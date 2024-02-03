@@ -20,6 +20,6 @@
     docker-compose up
 **Возникли проблемы при сборке?**: 
     ```bash 
-   docker-compose up --build
+    docker-compose up --build
    
 4. После запуска, вы можете перейти к основному функционалу, введя в адресную строку: http://127.0.0.1:8000/docs (Или localhost:8000/docs)
